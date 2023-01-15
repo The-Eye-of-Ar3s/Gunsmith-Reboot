@@ -11,7 +11,6 @@ import { ConfigTypes } from "@spt-aki/models/enums/ConfigTypes";
 import { ITraderAssort, ITraderBase } from "@spt-aki/models/eft/common/tables/ITrader";
 import { ITraderConfig, UpdateTime } from "@spt-aki/models/spt/config/ITraderConfig";
 import { JsonUtil } from "@spt-aki/utils/JsonUtil";
-import { ILocaleGlobalBase } from "@spt-aki/models/spt/server/ILocaleBase";
 
 // The new trader config
 import * as baseJson from "../db/base.json";
@@ -42,7 +41,6 @@ class SampleTrader implements IPreAkiLoadMod, IPostDBLoadMod
 
         // Keep a reference to the tables
         const tables = databaseServer.getTables();
-
         // Add the new trader to the trader lists in DatabaseServer
         tables.traders[baseJson._id] = {
             assort: this.createAssortTable(),
@@ -51,16 +49,13 @@ class SampleTrader implements IPreAkiLoadMod, IPostDBLoadMod
         };
 
         // For each language, add locale for the new trader
-        const locales = Object.values(tables.locales.global) as ILocaleGlobalBase[];
-        for (const locale of locales)
-        {
-            locale.trading[baseJson._id] = {
-                FullName: baseJson.name,
-                FirstName: baseJson.surname,
-                Nickname: baseJson.nickname,
-                Location: baseJson.location,
-                Description: "This is the cat shop"
-            };
+        const locales = Object.values(tables.locales.global) as Record<string, string>[];
+        for (const locale of locales) {
+            locale[`${baseJson._id} FullName`] = baseJson.name;
+            locale[`${baseJson._id} FirstName`] = baseJson.surname;
+            locale[`${baseJson._id} Nickname`] = baseJson.nickname;
+            locale[`${baseJson._id} Location`] = baseJson.location;
+            locale[`${baseJson._id} Description`] = "This is the cat shop";
         }
     }
 
